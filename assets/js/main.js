@@ -1,0 +1,377 @@
+/* ============================================================
+   OUD HOUSE — site behaviour
+   ============================================================ */
+
+/* ---------- Mobile nav ---------- */
+const navToggle = document.querySelector('.nav-toggle');
+const navLinks = document.querySelector('.nav-links');
+if (navToggle) {
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+}
+
+/* ---------- Scroll reveal ---------- */
+const observer = new IntersectionObserver(
+  entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  }),
+  { threshold: 0.12 }
+);
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ---------- Fragrance card renderer ---------- */
+function fragCard(f) {
+  return `
+    <a class="frag-card reveal visible" href="fragrance.html?id=${f.id}">
+      <div class="frag-card-img">
+        <img src="${f.image}" alt="${f.name} — Oud House" loading="lazy">
+        <span class="frag-badge">${f.type}</span>
+      </div>
+      <div class="frag-card-body">
+        <h3>${f.name}</h3>
+        <div class="frag-card-family">${f.family}</div>
+        <p class="frag-card-notes">${[...f.notes.top, ...f.notes.heart].slice(0, 4).join(' · ')}</p>
+        <div class="frag-card-foot">
+          <span class="frag-price">${f.price}</span>
+          <button class="card-add" data-add="${f.id}" aria-label="Add ${f.name} to cart">+ Add</button>
+        </div>
+      </div>
+    </a>`;
+}
+
+/* ---------- Directory page (fragrances.html) ---------- */
+const gridEl = document.getElementById('frag-grid');
+if (gridEl && typeof FRAGRANCES !== 'undefined') {
+  const searchEl = document.getElementById('frag-search');
+  const chipEls = document.querySelectorAll('.chip[data-family]');
+  let activeFamily = 'All';
+
+  function render() {
+    const q = (searchEl?.value || '').trim().toLowerCase();
+    const list = FRAGRANCES.filter(f => {
+      const inFamily = activeFamily === 'All' || f.family === activeFamily;
+      const haystack = [f.name, f.family, ...f.notes.top, ...f.notes.heart, ...f.notes.base].join(' ').toLowerCase();
+      return inFamily && haystack.includes(q);
+    });
+    gridEl.innerHTML = list.length
+      ? list.map(fragCard).join('')
+      : '<p class="no-results">No fragrances match your search — try a different note or family.</p>';
+  }
+
+  chipEls.forEach(chip => chip.addEventListener('click', () => {
+    chipEls.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFamily = chip.dataset.family;
+    render();
+  }));
+
+  searchEl?.addEventListener('input', render);
+  render();
+}
+
+/* ---------- Featured strip on home page ---------- */
+const featuredEl = document.getElementById('featured-grid');
+if (featuredEl && typeof FRAGRANCES !== 'undefined') {
+  featuredEl.innerHTML = FRAGRANCES.slice(0, 4).map(fragCard).join('');
+}
+
+/* ---------- Accord colours (Fragrantica-style semantic palette) ---------- */
+const ACCORD_COLORS = {
+  'oud':          '#3f2c19',
+  'woody':        '#774414',
+  'amber':        '#c47b27',
+  'smoky':        '#5a5a5a',
+  'incense':      '#6e6558',
+  'leather':      '#5e3a1e',
+  'earthy':       '#6d5c3f',
+  'balsamic':     '#52403a',
+  'warm spicy':   '#b05038',
+  'fresh spicy':  '#8bc34a',
+  'sweet':        '#bf3f3f',
+  'vanilla':      '#ede1c5',
+  'powdery':      '#c4b6ab',
+  'musky':        '#b9a8c0',
+  'rose':         '#e05a75',
+  'floral':       '#e88fb1',
+  'white floral': '#f5f0fa',
+  'honey':        '#d9a441',
+  'citrus':       '#f7ef48',
+  'fresh':        '#7fd6c2',
+  'green':        '#1f7d1f',
+  'aromatic':     '#3e8e7e'
+};
+
+/* Pick dark or light text depending on how bright the bar colour is */
+function accordTextColor(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const lum = (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  return lum > 0.55 ? '#1a1a1a' : '#f0ede6';
+}
+
+const WEAR_META = [
+  { key: 'winter', label: 'Winter', icon: '❄️', color: '#7ec8e3' },
+  { key: 'spring', label: 'Spring', icon: '🌿', color: '#8bc34a' },
+  { key: 'summer', label: 'Summer', icon: '⛱️', color: '#f08080' },
+  { key: 'fall',   label: 'Fall',   icon: '🍂', color: '#e8c48a' },
+  { key: 'day',    label: 'Day',    icon: '☀️', color: '#f5a623' },
+  { key: 'night',  label: 'Night',  icon: '🌙', color: '#9db8f0' }
+];
+
+/* ---------- Detail page (fragrance.html) ---------- */
+const detailEl = document.getElementById('frag-detail');
+if (detailEl && typeof FRAGRANCES !== 'undefined') {
+  const id = new URLSearchParams(location.search).get('id');
+  const f = FRAGRANCES.find(x => x.id === id) || FRAGRANCES[0];
+  document.title = `${f.name} — Oud House | بيت العود`;
+
+  const tier = (label, cls, notes) => `
+    <div class="note-tier ${cls}">
+      <div class="note-tier-label">${label}</div>
+      <div class="note-pills">${notes.map(n => `<span class="note-pill ${cls}">${n}</span>`).join('')}</div>
+    </div>`;
+
+  const accordsHtml = !f.accords ? '' : `
+    <div class="accords">
+      <h2>Main Accords</h2>
+      ${f.accords.map(a => {
+        const bg = ACCORD_COLORS[a.name.toLowerCase()] || '#8a7326';
+        const w = Math.max(28, Math.min(100, a.strength));
+        return `<div class="accord-bar" style="width:${w}%;background:${bg};color:${accordTextColor(bg)}">${a.name}</div>`;
+      }).join('')}
+    </div>`;
+
+  const wearHtml = !f.wear ? '' : `
+    <div class="wear">
+      <h2>When To Wear</h2>
+      <div class="wear-grid">
+        ${WEAR_META.map(m => `
+          <div class="wear-item">
+            <div class="wear-icon">${m.icon}</div>
+            <div class="wear-label">${m.label}</div>
+            <div class="wear-track"><div class="wear-fill" style="width:${f.wear[m.key] || 0}%;background:${m.color}"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  detailEl.innerHTML = `
+    <div class="detail-img reveal visible">
+      <img src="${f.image}" alt="${f.name} — Oud House">
+    </div>
+    <div class="detail-info">
+      <span class="eyebrow">Oud House · ${f.type}</span>
+      <h1>${f.name}</h1>
+      <div class="detail-family">${f.family}</div>
+      <p class="detail-desc">${f.desc}</p>
+
+      <div class="detail-meta">
+        <div><span>Price</span><strong>${f.price}</strong></div>
+        <div><span>Size</span><strong>${f.size}</strong></div>
+        <div><span>Longevity</span><strong>${f.longevity}</strong></div>
+        <div><span>Concentration</span><strong>${f.type}</strong></div>
+      </div>
+
+      ${accordsHtml}
+
+      <div class="pyramid">
+        <h2>Perfume Pyramid</h2>
+        ${tier('Top Notes', 'top', f.notes.top)}
+        ${tier('Heart Notes', 'heart', f.notes.heart)}
+        ${tier('Base Notes', 'base', f.notes.base)}
+      </div>
+
+      ${wearHtml}
+
+      <div class="detail-actions">
+        <div class="qty-picker qty-lg">
+          <button id="qty-minus" aria-label="Decrease quantity">−</button>
+          <span id="qty-val">1</span>
+          <button id="qty-plus" aria-label="Increase quantity">+</button>
+        </div>
+        <button class="btn btn-solid" id="detail-add">Add to Cart — €${f.priceEUR}</button>
+      </div>
+      <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
+    </div>`;
+
+  let qty = 1;
+  const qtyVal = document.getElementById('qty-val');
+  const detailAdd = document.getElementById('detail-add');
+  const syncQty = () => {
+    qtyVal.textContent = qty;
+    detailAdd.textContent = `Add to Cart — €${qty * f.priceEUR}`;
+  };
+  document.getElementById('qty-minus').addEventListener('click', () => { if (qty > 1) { qty--; syncQty(); } });
+  document.getElementById('qty-plus').addEventListener('click', () => { if (qty < 20) { qty++; syncQty(); } });
+  detailAdd.addEventListener('click', () => { addToCart(f.id, qty); openCart(); });
+}
+
+/* ---------- Contact links ---------- */
+if (typeof CONTACT !== 'undefined') {
+  document.querySelectorAll('[data-contact]').forEach(el => {
+    const key = el.dataset.contact;
+    if (key === 'email') el.href = 'mailto:' + CONTACT.email;
+    else if (CONTACT[key]) el.href = CONTACT[key];
+  });
+}
+
+/* ============================================================
+   Cart — localStorage-backed, checkout via WhatsApp or email
+   ============================================================ */
+
+const CART_KEY = 'oudhouse_cart';
+
+function getCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; } catch { return {}; }
+}
+
+function setCart(cart) {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch { /* private mode */ }
+  renderCartBadge();
+  renderCartDrawer();
+}
+
+function addToCart(id, qty = 1) {
+  const cart = getCart();
+  cart[id] = (cart[id] || 0) + qty;
+  setCart(cart);
+}
+
+function cartLines() {
+  if (typeof FRAGRANCES === 'undefined') return [];
+  return Object.entries(getCart())
+    .map(([id, qty]) => {
+      const f = FRAGRANCES.find(x => x.id === id);
+      return f ? { f, qty } : null;
+    })
+    .filter(Boolean);
+}
+
+function cartTotal(lines) {
+  return lines.reduce((sum, l) => sum + (l.f.priceEUR || 0) * l.qty, 0);
+}
+
+/* Pre-typed order message for WhatsApp / email checkout */
+function orderMessage() {
+  const lines = cartLines();
+  let msg = "Hi Oud House! I'd like to place an order:\n\n";
+  lines.forEach(l => {
+    msg += `• ${l.qty} × ${l.f.name} (${l.f.size} ${l.f.type}) — €${(l.f.priceEUR || 0) * l.qty}\n`;
+  });
+  msg += `\nTotal: €${cartTotal(lines)}\n\nName:\nDelivery address (Dublin / Ireland):\n\nAny custom blend requests:`;
+  return msg;
+}
+
+/* ---------- Drawer markup (injected on every page) ---------- */
+const cartHost = document.createElement('div');
+cartHost.innerHTML = `
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+    <div class="cart-head">
+      <h3>Your Order</h3>
+      <button class="cart-close" id="cart-close" aria-label="Close cart">×</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-foot" id="cart-foot">
+      <div class="cart-total">Total <strong id="cart-total">€0</strong></div>
+      <a class="btn btn-solid" id="cart-checkout-wa" target="_blank" rel="noopener">Checkout on WhatsApp</a>
+      <a class="btn" id="cart-checkout-email">Order by Email</a>
+      <p class="cart-note">We confirm every order personally and arrange payment &amp; delivery with you directly.</p>
+    </div>
+  </aside>`;
+document.body.append(...cartHost.children);
+
+const cartDrawer = document.getElementById('cart-drawer');
+const cartOverlay = document.getElementById('cart-overlay');
+
+function openCart() {
+  renderCartDrawer();
+  cartDrawer.classList.add('open');
+  cartOverlay.classList.add('open');
+}
+
+function closeCart() {
+  cartDrawer.classList.remove('open');
+  cartOverlay.classList.remove('open');
+}
+
+document.getElementById('cart-close').addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', closeCart);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+document.getElementById('cart-open')?.addEventListener('click', openCart);
+
+function renderCartBadge() {
+  const badge = document.getElementById('cart-count');
+  if (!badge) return;
+  const count = Object.values(getCart()).reduce((a, b) => a + b, 0);
+  badge.textContent = count;
+  badge.classList.toggle('empty', count === 0);
+}
+
+function renderCartDrawer() {
+  const itemsEl = document.getElementById('cart-items');
+  const lines = cartLines();
+
+  if (!lines.length) {
+    itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty.<br>Explore the collection to begin.</p>';
+  } else {
+    itemsEl.innerHTML = lines.map(l => `
+      <div class="cart-item">
+        <img src="${l.f.image}" alt="${l.f.name}">
+        <div class="cart-item-info">
+          <h4>${l.f.name}</h4>
+          <div class="cart-item-meta">${l.f.size} ${l.f.type} · €${l.f.priceEUR} each</div>
+          <div class="cart-item-row">
+            <div class="qty-picker">
+              <button data-cart-q="-1" data-cart-id="${l.f.id}" aria-label="Decrease">−</button>
+              <span>${l.qty}</span>
+              <button data-cart-q="1" data-cart-id="${l.f.id}" aria-label="Increase">+</button>
+            </div>
+            <span class="frag-price">€${l.f.priceEUR * l.qty}</span>
+          </div>
+        </div>
+        <button class="cart-remove" data-cart-remove="${l.f.id}" aria-label="Remove ${l.f.name}">✕</button>
+      </div>`).join('');
+  }
+
+  document.getElementById('cart-total').textContent = '€' + cartTotal(lines);
+  document.getElementById('cart-foot').style.display = lines.length ? '' : 'none';
+
+  if (typeof CONTACT !== 'undefined' && lines.length) {
+    const msg = orderMessage();
+    document.getElementById('cart-checkout-wa').href = CONTACT.whatsapp + '?text=' + encodeURIComponent(msg);
+    document.getElementById('cart-checkout-email').href =
+      'mailto:' + CONTACT.email + '?subject=' + encodeURIComponent('Order — Oud House') + '&body=' + encodeURIComponent(msg);
+  }
+}
+
+/* One delegated handler for every add / qty / remove button */
+document.addEventListener('click', e => {
+  const addEl = e.target.closest('[data-add]');
+  if (addEl) {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(addEl.dataset.add, 1);
+    openCart();
+    return;
+  }
+  const qtyEl = e.target.closest('[data-cart-q]');
+  if (qtyEl) {
+    const cart = getCart();
+    const id = qtyEl.dataset.cartId;
+    cart[id] = (cart[id] || 0) + Number(qtyEl.dataset.cartQ);
+    if (cart[id] <= 0) delete cart[id];
+    setCart(cart);
+    return;
+  }
+  const removeEl = e.target.closest('[data-cart-remove]');
+  if (removeEl) {
+    const cart = getCart();
+    delete cart[removeEl.dataset.cartRemove];
+    setCart(cart);
+  }
+});
+
+renderCartBadge();
+renderCartDrawer();
+
+/* ---------- Footer year ---------- */
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
