@@ -53,7 +53,7 @@ if (gridEl && typeof FRAGRANCES !== 'undefined') {
     const q = (searchEl?.value || '').trim().toLowerCase();
     const list = FRAGRANCES.filter(f => {
       const inFamily = activeFamily === 'All' || f.family === activeFamily;
-      const haystack = [f.name, f.family, ...f.notes.top, ...f.notes.heart, ...f.notes.base].join(' ').toLowerCase();
+      const haystack = [f.name, f.family, f.inspiredBy || '', ...f.notes.top, ...f.notes.heart, ...f.notes.base].join(' ').toLowerCase();
       return inFamily && haystack.includes(q);
     });
     gridEl.innerHTML = list.length
