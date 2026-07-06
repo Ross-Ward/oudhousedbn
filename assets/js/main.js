@@ -25,6 +25,7 @@ function fragCard(f) {
       <div class="frag-card-img">
         <img src="${f.image}" alt="${f.name} — Oud House" loading="lazy">
         <span class="frag-badge">${f.type}</span>
+        ${f.stock === 'out' ? '<span class="frag-badge stock out">Sold out</span>' : (f.stock === 'order' ? '<span class="frag-badge stock order">Made to order</span>' : '')}
       </div>
       <div class="frag-card-body">
         <h3>${f.name}</h3>
@@ -32,7 +33,9 @@ function fragCard(f) {
         <p class="frag-card-notes">${[...f.notes.top, ...f.notes.heart].slice(0, 4).join(' · ')}</p>
         <div class="frag-card-foot">
           <span class="frag-price">${f.price}</span>
-          <button class="card-add" data-add="${f.id}" aria-label="Add ${f.name} to cart">+ Add</button>
+          ${f.stock === 'out'
+        ? '<span class="card-soldout">Sold out</span>'
+        : `<button class="card-add" data-add="${f.id}" aria-label="Add ${f.name} to cart">+ Add</button>`}
         </div>
       </div>
     </a>`;
@@ -162,6 +165,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <span class="eyebrow">Oud House · ${f.type}</span>
       <h1>${f.name}</h1>
       <div class="detail-family">${f.family}</div>
+      ${f.stock === 'out' ? '<div class="stock-note out">Currently sold out — check back soon.</div>' : (f.stock === 'order' ? '<div class="stock-note order">Handcrafted to order — allow a few days.</div>' : '')}
       <p class="detail-desc">${f.desc}</p>
 
       <div class="detail-meta">
@@ -197,7 +201,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
           <span id="qty-val">1</span>
           <button id="qty-plus" aria-label="Increase quantity">+</button>
         </div>
-        <button class="btn btn-solid" id="detail-add">Add to Cart — €${f0 ? f0.priceEUR : f.priceEUR}</button>
+        <button class="btn btn-solid" id="detail-add"${f.stock === 'out' ? ' disabled' : ''}>${f.stock === 'out' ? 'Sold out' : `Add to Cart — €${f0 ? f0.priceEUR : f.priceEUR}`}</button>
       </div>
       <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
     </div>`;
@@ -222,13 +226,14 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
   const price = () => hasFmts ? f.formats[currentFmt].priceEUR : (f.priceEUR || 0);
   const qtyVal = document.getElementById('qty-val');
   const detailAdd = document.getElementById('detail-add');
+  const soldOut = f.stock === 'out';
   const syncQty = () => {
     qtyVal.textContent = qty;
-    detailAdd.textContent = `Add to Cart — €${qty * price()}`;
+    if (!soldOut) detailAdd.textContent = `Add to Cart — €${qty * price()}`;
   };
   document.getElementById('qty-minus').addEventListener('click', () => { if (qty > 1) { qty--; syncQty(); } });
   document.getElementById('qty-plus').addEventListener('click', () => { if (qty < 20) { qty++; syncQty(); } });
-  detailAdd.addEventListener('click', () => { addToCart(f.id, hasFmts ? currentFmt : 0, qty); openCart(); });
+  detailAdd.addEventListener('click', () => { if (soldOut) return; addToCart(f.id, hasFmts ? currentFmt : 0, qty); openCart(); });
   detailEl.querySelectorAll('.format-opt').forEach(btn => btn.addEventListener('click', () => {
     detailEl.querySelectorAll('.format-opt').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
