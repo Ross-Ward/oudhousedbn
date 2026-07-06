@@ -977,3 +977,7 @@ section { padding: 5.5rem 0; }
   section { padding: 3.5rem 0; }
   .hero { min-height: 72vh; }
 }
+
+/* You may also like (product detail) */
+.you-may{margin-top:72px}
+.you-may .section-title{margin-top:4px}

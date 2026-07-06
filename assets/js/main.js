@@ -191,6 +191,22 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
     </div>`;
 
+  /* "You may also like" — nearest oils by shared notes + family */
+  (function () {
+    const nset = x => new Set([...(x.notes.top || []), ...(x.notes.heart || []), ...(x.notes.base || [])].map(n => n.toLowerCase()));
+    const base = nset(f);
+    const sim = FRAGRANCES.filter(x => x.id !== f.id).map(x => {
+      const s = nset(x); let shared = 0; base.forEach(n => { if (s.has(n)) shared++; });
+      return { x, score: shared + (x.family === f.family ? 1.5 : 0) };
+    }).filter(o => o.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
+    if (sim.length) {
+      detailEl.insertAdjacentHTML('afterend',
+        `<section class="you-may container"><span class="eyebrow">Discover more</span>` +
+        `<h2 class="section-title">You may also like</h2>` +
+        `<div class="frag-grid">${sim.map(o => fragCard(o.x)).join('')}</div></section>`);
+    }
+  })();
+
   let qty = 1;
   const qtyVal = document.getElementById('qty-val');
   const detailAdd = document.getElementById('detail-add');
