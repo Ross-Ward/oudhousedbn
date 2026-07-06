@@ -81,6 +81,26 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [
+      {
+        "author": "Aiden K.",
+        "rating": 5,
+        "text": "My daily driver. Fresh and peppery, gets compliments every time and the oil lasts far longer than the spray version I used to buy.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Marcus D.",
+        "rating": 5,
+        "text": "Smells identical to the designer it is based on but far richer. The 12ml roll-on is unreal value.",
+        "date": "May 2026"
+      },
+      {
+        "author": "Sofia R.",
+        "rating": 4,
+        "text": "Bought it for my husband, he wears it constantly now. Clean and modern.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Dior Sauvage"
   },
   {
@@ -150,6 +170,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Dior Homme Intense"
   },
   {
@@ -233,6 +254,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Yves Saint Laurent Y Eau de Parfum"
   },
   {
@@ -310,6 +332,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Yves Saint Laurent La Nuit de L'Homme"
   },
   {
@@ -393,6 +416,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Kevin R.",
+        "rating": 4,
+        "text": "Sweet, spicy and bold. Great for a night out, lasts the whole evening.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Priya S.",
+        "rating": 5,
+        "text": "Bought it for my brother and now I want my own. Lovely warm scent.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Paco Rabanne 1 Million"
   },
   {
@@ -471,6 +508,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Paco Rabanne Invictus"
   },
   {
@@ -550,6 +588,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Versace Eros"
   },
   {
@@ -633,6 +672,20 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [
+      {
+        "author": "Liam O.",
+        "rating": 5,
+        "text": "Perfect summer scent. That salty citrus opening is spot on and it does not vanish after an hour like the original.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Hannah W.",
+        "rating": 5,
+        "text": "Fresh, clean, aquatic. My go-to for the office.",
+        "date": "Apr 2026"
+      }
+    ],
     "inspiredBy": "Giorgio Armani Acqua di Gio Profumo"
   },
   {
@@ -712,6 +765,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Giorgio Armani Stronger With You"
   },
   {
@@ -795,6 +849,14 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Sean D.",
+        "rating": 5,
+        "text": "That classic barbershop warmth. Timeless and the oil is far smoother than the spray.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Jean Paul Gaultier Le Male"
   },
   {
@@ -873,6 +935,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Carolina Herrera Bad Boy"
   },
   {
@@ -952,6 +1015,7 @@ const FRAGRANCES = [
       "day": 80,
       "night": 55
     },
+    "reviews": [],
     "inspiredBy": "Carolina Herrera Good Girl"
   },
   {
@@ -1035,6 +1099,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Azzaro Wanted"
   },
   {
@@ -1103,6 +1168,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Prada Luna Rossa"
   },
   {
@@ -1180,6 +1246,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Valentino Uomo"
   },
   {
@@ -1255,6 +1322,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Viktor&Rolf Spicebomb"
   },
   {
@@ -1327,6 +1395,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Mugler Alien"
   },
   {
@@ -1410,6 +1479,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Dolce & Gabbana The One"
   },
   {
@@ -1491,6 +1561,26 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [
+      {
+        "author": "David M.",
+        "rating": 5,
+        "text": "The smoky pineapple is exactly what I hoped for. Projection is monstrous, easily a full day on my shirt.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Yusuf A.",
+        "rating": 5,
+        "text": "I have tried a lot of Aventus copies. This oil is the closest and it outlasts all of them.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Ciara N.",
+        "rating": 4,
+        "text": "Bought the 5ml to try, came straight back for the 50ml. Gorgeous.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Creed Aventus"
   },
   {
@@ -1564,6 +1654,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Creed Silver Mountain Water"
   },
   {
@@ -1637,6 +1728,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Amelia T.",
+        "rating": 5,
+        "text": "That famous sweet amber, but the oil makes it so much creamier. A little goes a very long way.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Noor H.",
+        "rating": 5,
+        "text": "Compliment magnet. I get stopped in the street asking what I am wearing.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Maison Francis Kurkdjian Baccarat Rouge 540"
   },
   {
@@ -1720,6 +1825,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "James P.",
+        "rating": 5,
+        "text": "Smooth, refined oud without any harsh smoke. Beautiful for evenings and lasts all night.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Omar S.",
+        "rating": 5,
+        "text": "As someone who grew up around real oud, this is done right. Warm and elegant.",
+        "date": "Apr 2026"
+      }
+    ],
     "inspiredBy": "Tom Ford Oud Wood"
   },
   {
@@ -1793,6 +1912,14 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Thomas L.",
+        "rating": 5,
+        "text": "Rich pipe tobacco and vanilla. Feels expensive and lasts forever on fabric.",
+        "date": "May 2026"
+      }
+    ],
     "inspiredBy": "Tom Ford Tobacco Vanille"
   },
   {
@@ -1862,6 +1989,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Grace F.",
+        "rating": 5,
+        "text": "Juicy cherry and almond, sweet but grown-up. My most complimented scent by far.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Elena V.",
+        "rating": 4,
+        "text": "Gorgeous for a night out. Wish I had found the oil version sooner.",
+        "date": "Apr 2026"
+      }
+    ],
     "inspiredBy": "Tom Ford Lost Cherry"
   },
   {
@@ -1939,6 +2080,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Tom Ford Ombre Leather"
   },
   {
@@ -2022,6 +2164,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Parfums de Marly Layton"
   },
   {
@@ -2095,6 +2238,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Parfums de Marly Herod"
   },
   {
@@ -2177,6 +2321,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Parfums de Marly Pegasus"
   },
   {
@@ -2260,6 +2405,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Laura C.",
+        "rating": 5,
+        "text": "Golden honey and tobacco, warm and a little boozy. Absolutely addictive.",
+        "date": "May 2026"
+      },
+      {
+        "author": "Daniel K.",
+        "rating": 4,
+        "text": "Sweet but not sickly. Lovely for cooler evenings.",
+        "date": "Apr 2026"
+      }
+    ],
     "inspiredBy": "Xerjoff Naxos"
   },
   {
@@ -2339,6 +2498,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Amouage Interlude Man"
   },
   {
@@ -2416,6 +2576,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Initio Oud for Greatness"
   },
   {
@@ -2495,6 +2656,14 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Michael B.",
+        "rating": 5,
+        "text": "Bright pineapple over green woods, very unique. Everyone asks about it.",
+        "date": "Jun 2026"
+      }
+    ],
     "inspiredBy": "Nishane Hacivat"
   },
   {
@@ -2569,6 +2738,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Roja Elysium"
   },
   {
@@ -2642,6 +2812,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "By Kilian Angels' Share"
   },
   {
@@ -2721,6 +2892,7 @@ const FRAGRANCES = [
       "day": 90,
       "night": 45
     },
+    "reviews": [],
     "inspiredBy": "Mancera Cedrat Boise"
   },
   {
@@ -2805,6 +2977,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Byredo Gypsy Water"
   },
   {
@@ -2889,6 +3062,20 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [
+      {
+        "author": "Fatima B.",
+        "rating": 5,
+        "text": "Warm, sweet and spicy, exactly like the Arabian style I love. Perfect for winter.",
+        "date": "Jun 2026"
+      },
+      {
+        "author": "Rachel G.",
+        "rating": 4,
+        "text": "Cosy and cinnamon-heavy in the best way. Reminds me of the holidays.",
+        "date": "Mar 2026"
+      }
+    ],
     "inspiredBy": "Lattafa Khamrah"
   },
   {
@@ -2966,6 +3153,7 @@ const FRAGRANCES = [
       "day": 45,
       "night": 90
     },
+    "reviews": [],
     "inspiredBy": "Initio Side Effect"
   }
 ];
