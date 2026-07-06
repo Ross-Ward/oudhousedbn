@@ -981,3 +981,15 @@ section { padding: 5.5rem 0; }
 /* You may also like (product detail) */
 .you-may{margin-top:72px}
 .you-may .section-title{margin-top:4px}
+
+/* Product format selector (roll-on / EDP / …) */
+.format-select{margin:34px 0}
+.format-opts{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.format-opt{display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+  padding:12px 18px;border:1px solid #2c2419;border-radius:12px;background:#17130f;
+  color:#efe8db;cursor:pointer;transition:border-color .15s,background .15s;min-width:118px}
+.format-opt:hover{border-color:#c8a45c}
+.format-opt.active{border-color:#c8a45c;background:rgba(200,164,92,.1)}
+.fo-type{font-size:14px}
+.fo-size{font-size:12px;color:#9a8f7e}
+.fo-price{color:#e6c684;font-weight:600;margin-top:2px}

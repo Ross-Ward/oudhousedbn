@@ -122,6 +122,8 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
   const id = new URLSearchParams(location.search).get('id');
   const f = FRAGRANCES.find(x => x.id === id) || FRAGRANCES[0];
   document.title = `${f.name} — Oud House | بيت العود`;
+  const hasFmts = f.formats && f.formats.length;
+  const f0 = hasFmts ? f.formats[0] : null;
 
   const tier = (label, cls, notes) => `
     <div class="note-tier ${cls}">
@@ -163,11 +165,20 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <p class="detail-desc">${f.desc}</p>
 
       <div class="detail-meta">
-        <div><span>Price</span><strong>${f.price}</strong></div>
-        <div><span>Size</span><strong>${f.size}</strong></div>
+        <div><span>Price</span><strong id="d-price">${f0 ? '€' + f0.priceEUR : f.price}</strong></div>
+        <div><span>Size</span><strong id="d-size">${f0 ? f0.size : f.size}</strong></div>
         <div><span>Longevity</span><strong>${f.longevity}</strong></div>
-        <div><span>Concentration</span><strong>${f.type}</strong></div>
+        <div><span>Concentration</span><strong id="d-conc">${f0 ? f0.type : f.type}</strong></div>
       </div>
+
+      ${hasFmts && f.formats.length > 1 ? `
+      <div class="format-select">
+        <h2>Choose your format</h2>
+        <div class="format-opts">
+          ${f.formats.map((ft, i) => `<button type="button" class="format-opt${i === 0 ? ' active' : ''}" data-fmt="${i}">
+            <span class="fo-type">${ft.type}</span><span class="fo-size">${ft.size}</span><span class="fo-price">€${ft.priceEUR}</span></button>`).join('')}
+        </div>
+      </div>` : ''}
 
       ${accordsHtml}
 
@@ -186,7 +197,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
           <span id="qty-val">1</span>
           <button id="qty-plus" aria-label="Increase quantity">+</button>
         </div>
-        <button class="btn btn-solid" id="detail-add">Add to Cart — €${f.priceEUR}</button>
+        <button class="btn btn-solid" id="detail-add">Add to Cart — €${f0 ? f0.priceEUR : f.priceEUR}</button>
       </div>
       <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
     </div>`;
@@ -207,16 +218,26 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
     }
   })();
 
-  let qty = 1;
+  let qty = 1, currentFmt = 0;
+  const price = () => hasFmts ? f.formats[currentFmt].priceEUR : (f.priceEUR || 0);
   const qtyVal = document.getElementById('qty-val');
   const detailAdd = document.getElementById('detail-add');
   const syncQty = () => {
     qtyVal.textContent = qty;
-    detailAdd.textContent = `Add to Cart — €${qty * f.priceEUR}`;
+    detailAdd.textContent = `Add to Cart — €${qty * price()}`;
   };
   document.getElementById('qty-minus').addEventListener('click', () => { if (qty > 1) { qty--; syncQty(); } });
   document.getElementById('qty-plus').addEventListener('click', () => { if (qty < 20) { qty++; syncQty(); } });
-  detailAdd.addEventListener('click', () => { addToCart(f.id, qty); openCart(); });
+  detailAdd.addEventListener('click', () => { addToCart(f.id, hasFmts ? currentFmt : 0, qty); openCart(); });
+  detailEl.querySelectorAll('.format-opt').forEach(btn => btn.addEventListener('click', () => {
+    detailEl.querySelectorAll('.format-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFmt = Number(btn.dataset.fmt);
+    const ft = f.formats[currentFmt];
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('d-price', '€' + ft.priceEUR); set('d-size', ft.size); set('d-conc', ft.type);
+    syncQty();
+  }));
 }
 
 /* ---------- Contact links ---------- */
@@ -244,24 +265,30 @@ function setCart(cart) {
   renderCartDrawer();
 }
 
-function addToCart(id, qty = 1) {
+function addToCart(id, fmtIdx = 0, qty = 1) {
   const cart = getCart();
-  cart[id] = (cart[id] || 0) + qty;
+  const key = fmtIdx ? id + '~~' + fmtIdx : id;
+  cart[key] = (cart[key] || 0) + qty;
   setCart(cart);
 }
 
+function fmtOf(f, i) { return (f.formats && f.formats.length) ? (f.formats[i] || f.formats[0]) : null; }
+
 function cartLines() {
   if (typeof FRAGRANCES === 'undefined') return [];
-  return Object.entries(getCart())
-    .map(([id, qty]) => {
-      const f = FRAGRANCES.find(x => x.id === id);
-      return f ? { f, qty } : null;
-    })
-    .filter(Boolean);
+  return Object.entries(getCart()).map(([key, qty]) => {
+    const sep = key.indexOf('~~');
+    const id = sep >= 0 ? key.slice(0, sep) : key;
+    const fi = sep >= 0 ? Number(key.slice(sep + 2)) : 0;
+    const f = FRAGRANCES.find(x => x.id === id);
+    if (!f) return null;
+    const ft = fmtOf(f, fi);
+    return { key, f, qty, price: ft ? ft.priceEUR : (f.priceEUR || 0), label: ft ? (ft.type + ' ' + ft.size) : (f.size + ' ' + f.type) };
+  }).filter(Boolean);
 }
 
 function cartTotal(lines) {
-  return lines.reduce((sum, l) => sum + (l.f.priceEUR || 0) * l.qty, 0);
+  return lines.reduce((sum, l) => sum + l.price * l.qty, 0);
 }
 
 /* Pre-typed order message for WhatsApp / email checkout */
@@ -269,7 +296,7 @@ function orderMessage() {
   const lines = cartLines();
   let msg = "Hi Oud House! I'd like to place an order:\n\n";
   lines.forEach(l => {
-    msg += `• ${l.qty} × ${l.f.name} (${l.f.size} ${l.f.type}) — €${(l.f.priceEUR || 0) * l.qty}\n`;
+    msg += `• ${l.qty} × ${l.f.name} (${l.label}) — €${l.price * l.qty}\n`;
   });
   msg += `\nTotal: €${cartTotal(lines)}\n\nName:\nDelivery address (Dublin / Ireland):\n\nAny custom blend requests:`;
   return msg;
@@ -333,17 +360,17 @@ function renderCartDrawer() {
         <img src="${l.f.image}" alt="${l.f.name}">
         <div class="cart-item-info">
           <h4>${l.f.name}</h4>
-          <div class="cart-item-meta">${l.f.size} ${l.f.type} · €${l.f.priceEUR} each</div>
+          <div class="cart-item-meta">${l.label} · €${l.price} each</div>
           <div class="cart-item-row">
             <div class="qty-picker">
-              <button data-cart-q="-1" data-cart-id="${l.f.id}" aria-label="Decrease">−</button>
+              <button data-cart-q="-1" data-cart-id="${l.key}" aria-label="Decrease">−</button>
               <span>${l.qty}</span>
-              <button data-cart-q="1" data-cart-id="${l.f.id}" aria-label="Increase">+</button>
+              <button data-cart-q="1" data-cart-id="${l.key}" aria-label="Increase">+</button>
             </div>
-            <span class="frag-price">€${l.f.priceEUR * l.qty}</span>
+            <span class="frag-price">€${l.price * l.qty}</span>
           </div>
         </div>
-        <button class="cart-remove" data-cart-remove="${l.f.id}" aria-label="Remove ${l.f.name}">✕</button>
+        <button class="cart-remove" data-cart-remove="${l.key}" aria-label="Remove ${l.f.name}">✕</button>
       </div>`).join('');
   }
 
@@ -364,7 +391,7 @@ document.addEventListener('click', e => {
   if (addEl) {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(addEl.dataset.add, 1);
+    addToCart(addEl.dataset.add, 0, 1);
     openCart();
     return;
   }
