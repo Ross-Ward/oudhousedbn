@@ -982,6 +982,22 @@ section { padding: 5.5rem 0; }
 .you-may{margin-top:72px}
 .you-may .section-title{margin-top:4px}
 
+/* Rating + reviews (product detail) */
+.stars{color:var(--gold-bright);letter-spacing:2px;font-size:15px;white-space:nowrap}
+.stars.small{font-size:13px;letter-spacing:1px}
+.detail-rating{display:flex;align-items:center;gap:10px;margin:2px 0 6px}
+.detail-rating .rating-num{color:#efe8db;font-weight:600}
+.detail-rating .rating-count{color:var(--gold-dim);font-size:14px}
+.reviews{margin-top:64px}
+.reviews .section-title{margin-top:4px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.reviews .rev-agg{font-size:15px;color:var(--gold-dim);font-weight:400;letter-spacing:.02em}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:22px}
+.review{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.review-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.review-author{font-weight:600;color:#efe8db}
+.review-date{color:var(--gold-dim);font-size:13px;margin-left:auto}
+.review-text{color:#c7c2b8;line-height:1.6;margin:0}
+
 /* Product format selector (roll-on / EDP / …) */
 .format-select{margin:34px 0}
 .format-opts{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}

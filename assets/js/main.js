@@ -179,6 +179,31 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       </div>
     </div>`;
 
+  /* Reviews (owner-curated, published from the Studio) */
+  const escHtml = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const reviews = (Array.isArray(f.reviews) ? f.reviews : []).filter(r => r && r.text);
+  const avgRating = reviews.length ? reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0) / reviews.length : 0;
+  const stars = n => { const full = Math.round(n); return '★'.repeat(Math.max(0, Math.min(5, full))) + '☆'.repeat(Math.max(0, 5 - full)); };
+  const ratingHtml = reviews.length
+    ? `<div class="detail-rating"><span class="stars" aria-label="${avgRating.toFixed(1)} out of 5">${stars(avgRating)}</span> <span class="rating-num">${avgRating.toFixed(1)}</span> <span class="rating-count">(${reviews.length} review${reviews.length === 1 ? '' : 's'})</span></div>`
+    : '';
+  const reviewsHtml = !reviews.length ? '' : `
+    <section class="reviews container">
+      <span class="eyebrow">What people say</span>
+      <h2 class="section-title">Reviews <span class="rev-agg"><span class="stars">${stars(avgRating)}</span> ${avgRating.toFixed(1)} · ${reviews.length}</span></h2>
+      <div class="review-grid">
+        ${reviews.map(r => `
+          <div class="review">
+            <div class="review-head">
+              <span class="review-author">${escHtml(r.author) || 'Verified buyer'}</span>
+              <span class="stars small" aria-label="${Number(r.rating) || 0} out of 5">${stars(Number(r.rating) || 0)}</span>
+              ${r.date ? `<span class="review-date">${escHtml(r.date)}</span>` : ''}
+            </div>
+            <p class="review-text">${escHtml(r.text)}</p>
+          </div>`).join('')}
+      </div>
+    </section>`;
+
   detailEl.innerHTML = `
     <div class="detail-img reveal visible">
       <img src="${f.image}" alt="${f.name} — Oud House">
@@ -187,6 +212,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <span class="eyebrow">Oud House · ${f.type}</span>
       <h1>${f.name}</h1>
       <div class="detail-family">${f.family}</div>
+      ${ratingHtml}
       ${f.stock === 'out' ? '<div class="stock-note out">Currently sold out — check back soon.</div>' : (f.stock === 'order' ? '<div class="stock-note order">Handcrafted to order — allow a few days.</div>' : '')}
       <p class="detail-desc">${f.desc}</p>
 
@@ -229,8 +255,10 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
     </div>`;
 
-  /* "You may also like" — nearest oils by shared notes + family */
+  /* Reviews section, then "You may also like" — nearest oils by shared notes + family */
   (function () {
+    let anchor = detailEl;
+    if (reviewsHtml) { detailEl.insertAdjacentHTML('afterend', reviewsHtml); anchor = detailEl.nextElementSibling; }
     const nset = x => new Set([...(x.notes.top || []), ...(x.notes.heart || []), ...(x.notes.base || [])].map(n => n.toLowerCase()));
     const base = nset(f);
     const sim = FRAGRANCES.filter(x => x.id !== f.id).map(x => {
@@ -238,7 +266,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       return { x, score: shared + (x.family === f.family ? 1.5 : 0) };
     }).filter(o => o.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
     if (sim.length) {
-      detailEl.insertAdjacentHTML('afterend',
+      anchor.insertAdjacentHTML('afterend',
         `<section class="you-may container"><span class="eyebrow">Discover more</span>` +
         `<h2 class="section-title">You may also like</h2>` +
         `<div class="frag-grid">${sim.map(o => fragCard(o.x)).join('')}</div></section>`);
