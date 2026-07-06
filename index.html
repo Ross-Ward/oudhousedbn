@@ -29,8 +29,6 @@
           <li><a href="fragrances.html">Fragrances</a></li>
           <li><a href="wishlist.html">Wishlist</a></li>
           <li><a href="guide.html">Guide</a></li>
-          <li><a href="quiz.html">Find Your Scent</a></li>
-          <li><a href="scent-finder.html">Scent Finder</a></li>
           <li><a href="index.html#custom">Custom Oils</a></li>
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#contact">Contact</a></li>
@@ -69,6 +67,35 @@
       <div class="frag-grid" id="featured-grid"></div>
       <div style="text-align:center;margin-top:3rem">
         <a href="fragrances.html" class="btn">View All Fragrances</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= Find your scent ======= -->
+  <section class="section-dark" id="find-your-scent">
+    <div class="container">
+      <div style="text-align:center">
+        <span class="eyebrow">Not sure where to start?</span>
+        <h2 class="section-title">Find Your Scent</h2>
+        <p class="section-sub" style="margin-left:auto;margin-right:auto">Two quick ways to discover the oil that's right for you.</p>
+      </div>
+      <div class="finder-options">
+        <button class="finder-card reveal" type="button" data-finder="scent-finder.html">
+          <div class="finder-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </div>
+          <h3>Match a scent you love</h3>
+          <p>Tell us a designer or niche fragrance you already wear, and we'll show you our oil that captures it.</p>
+          <span class="finder-cta">Find my match →</span>
+        </button>
+        <button class="finder-card reveal" type="button" data-finder="quiz.html">
+          <div class="finder-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 4.9L19.5 8l-3.8 3.6.9 5.3L12 14.4 7.4 16.9l.9-5.3L4.5 8l5.3-.1L12 3z"/></svg>
+          </div>
+          <h3>Take the scent quiz</h3>
+          <p>Answer a few quick questions about what you like, and we'll recommend the oils made for you.</p>
+          <span class="finder-cta">Start the quiz →</span>
+        </button>
       </div>
     </div>
   </section>
@@ -165,6 +192,15 @@
       <div class="copyright">© <span id="year"></span> Oud House Dublin · بيت العود · Handcrafted oil-based perfumes</div>
     </div>
   </footer>
+
+  <!-- ======= Find-your-scent popup ======= -->
+  <div class="finder-modal" id="finder-modal" hidden>
+    <div class="finder-backdrop" data-finder-close></div>
+    <div class="finder-dialog" role="dialog" aria-modal="true" aria-label="Find your scent">
+      <button class="finder-x" data-finder-close aria-label="Close">×</button>
+      <iframe class="finder-frame" id="finder-frame" title="Find your scent" src="about:blank"></iframe>
+    </div>
+  </div>
 
   <script src="assets/js/data.js"></script>
   <script src="assets/js/main.js"></script>

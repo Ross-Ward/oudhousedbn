@@ -9,6 +9,28 @@ if (navToggle) {
   navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
 }
 
+/* ---------- Find-your-scent popup ---------- */
+(function () {
+  const modal = document.getElementById('finder-modal');
+  const frame = document.getElementById('finder-frame');
+  if (!modal || !frame) return;
+  const open = (src) => {
+    frame.src = src;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    modal.hidden = true;
+    frame.src = 'about:blank';
+    document.body.style.overflow = '';
+  };
+  document.querySelectorAll('[data-finder]').forEach(btn =>
+    btn.addEventListener('click', () => open(btn.dataset.finder)));
+  modal.querySelectorAll('[data-finder-close]').forEach(el =>
+    el.addEventListener('click', close));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) close(); });
+})();
+
 /* ---------- Scroll reveal ---------- */
 const observer = new IntersectionObserver(
   entries => entries.forEach(e => {

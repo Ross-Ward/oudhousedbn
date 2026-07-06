@@ -982,6 +982,29 @@ section { padding: 5.5rem 0; }
 .you-may{margin-top:72px}
 .you-may .section-title{margin-top:4px}
 
+/* Find your scent — homepage option cards + popup */
+.finder-options{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px;max-width:860px;margin-left:auto;margin-right:auto}
+.finder-card{text-align:left;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  padding:30px 28px;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;gap:10px;
+  transition:transform .18s,border-color .18s,box-shadow .18s}
+.finder-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 22px 46px -22px rgba(0,0,0,.85)}
+.finder-icon{width:58px;height:58px;border-radius:14px;display:grid;place-items:center;color:var(--gold);
+  background:rgba(201,162,39,.09);border:1px solid rgba(201,162,39,.25);margin-bottom:6px}
+.finder-card h3{margin:0;font-size:20px;color:#efe8db}
+.finder-card p{margin:0;color:var(--text-muted,#c7c2b8);line-height:1.55;font-size:14.5px}
+.finder-cta{margin-top:4px;color:var(--gold-bright);font-weight:500;letter-spacing:.02em}
+.finder-modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:22px}
+.finder-modal[hidden]{display:none}
+.finder-backdrop{position:absolute;inset:0;background:rgba(6,6,7,.78);backdrop-filter:blur(3px)}
+.finder-dialog{position:relative;width:min(720px,100%);height:min(86vh,880px);background:var(--bg,#0a0a0b);
+  border:1px solid var(--gold);border-radius:16px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.9)}
+.finder-frame{width:100%;height:100%;border:0;background:var(--bg,#0a0a0b)}
+.finder-x{position:absolute;top:10px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;
+  background:rgba(10,10,11,.7);border:1px solid var(--border);color:#efe8db;font-size:22px;line-height:1;cursor:pointer;
+  display:grid;place-items:center;transition:border-color .15s,color .15s}
+.finder-x:hover{border-color:var(--gold);color:var(--gold-bright)}
+@media(max-width:680px){.finder-options{grid-template-columns:1fr;gap:16px}}
+
 /* Rating + reviews (product detail) */
 .stars{color:var(--gold-bright);letter-spacing:2px;font-size:15px;white-space:nowrap}
 .stars.small{font-size:13px;letter-spacing:1px}
