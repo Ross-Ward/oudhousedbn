@@ -26,6 +26,7 @@ function fragCard(f) {
         <img src="${f.image}" alt="${f.name} — Oud House" loading="lazy">
         <span class="frag-badge">${f.type}</span>
         ${f.stock === 'out' ? '<span class="frag-badge stock out">Sold out</span>' : (f.stock === 'order' ? '<span class="frag-badge stock order">Made to order</span>' : '')}
+        <button class="wish-btn${isWished(f.id) ? ' on' : ''}" data-wish="${f.id}" aria-label="Save ${f.name}">${isWished(f.id) ? '♥' : '♡'}</button>
       </div>
       <div class="frag-card-body">
         <h3>${f.name}</h3>
@@ -74,8 +75,29 @@ if (gridEl && typeof FRAGRANCES !== 'undefined') {
 /* ---------- Featured strip on home page ---------- */
 const featuredEl = document.getElementById('featured-grid');
 if (featuredEl && typeof FRAGRANCES !== 'undefined') {
-  featuredEl.innerHTML = FRAGRANCES.slice(0, 4).map(fragCard).join('');
+  const featured = FRAGRANCES.filter(f => f.featured);
+  featuredEl.innerHTML = (featured.length ? featured : FRAGRANCES).slice(0, 4).map(fragCard).join('');
 }
+
+/* ---------- Wishlist (localStorage) ---------- */
+const WISH_KEY = 'oudhouse_wishlist';
+function getWish() { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || []; } catch { return []; } }
+function isWished(id) { return getWish().indexOf(id) >= 0; }
+function toggleWish(id) {
+  const a = getWish(); const i = a.indexOf(id);
+  if (i >= 0) a.splice(i, 1); else a.push(id);
+  try { localStorage.setItem(WISH_KEY, JSON.stringify(a)); } catch { /* private mode */ }
+  return i < 0;
+}
+const wishGridEl = document.getElementById('wishlist-grid');
+function renderWishlist() {
+  if (!wishGridEl || typeof FRAGRANCES === 'undefined') return;
+  const saved = getWish().map(id => FRAGRANCES.find(f => f.id === id)).filter(Boolean);
+  wishGridEl.innerHTML = saved.length
+    ? saved.map(fragCard).join('')
+    : '<p class="no-results">No saved fragrances yet — tap the heart on any oil to save it here.</p>';
+}
+if (wishGridEl) renderWishlist();
 
 /* ---------- Accord colours (Fragrantica-style semantic palette) ---------- */
 const ACCORD_COLORS = {
@@ -202,6 +224,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
           <button id="qty-plus" aria-label="Increase quantity">+</button>
         </div>
         <button class="btn btn-solid" id="detail-add"${f.stock === 'out' ? ' disabled' : ''}>${f.stock === 'out' ? 'Sold out' : `Add to Cart — €${f0 ? f0.priceEUR : f.priceEUR}`}</button>
+        <button class="wish-btn wish-lg${isWished(f.id) ? ' on' : ''}" data-wish="${f.id}" aria-label="Save ${f.name}">${isWished(f.id) ? '♥' : '♡'}</button>
       </div>
       <a class="back-link" href="fragrances.html">← Back to all fragrances</a>
     </div>`;
@@ -392,6 +415,16 @@ function renderCartDrawer() {
 
 /* One delegated handler for every add / qty / remove button */
 document.addEventListener('click', e => {
+  const wishEl = e.target.closest('[data-wish]');
+  if (wishEl) {
+    e.preventDefault();
+    e.stopPropagation();
+    const on = toggleWish(wishEl.dataset.wish);
+    wishEl.classList.toggle('on', on);
+    wishEl.textContent = on ? '♥' : '♡';
+    renderWishlist();
+    return;
+  }
   const addEl = e.target.closest('[data-add]');
   if (addEl) {
     e.preventDefault();
