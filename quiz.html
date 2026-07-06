@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find Your Scent — Oud House Dublin</title>
+<meta name="description" content="Answer a few questions and we'll recommend your Oud House oil.">
+<link rel="icon" type="image/jpeg" href="assets/img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c8a45c;--gold2:#e6c684;--panel:#17130f;--line:#2c2419;--text:#efe8db;--muted:#9a8f7e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 20% -10%,rgba(200,164,92,.1),transparent),#0d0b09;color:var(--text);font:400 16px/1.6 'Jost',system-ui,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:48px 22px}
+.brand{text-align:center;margin-bottom:20px}.brand .ar{color:var(--gold);font-size:24px;display:block}
+.brand b{font:600 26px 'Cormorant Garamond',serif;letter-spacing:5px}
+h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4px}
+.lead{text-align:center;color:var(--muted);margin:0 auto 28px}
+.q{margin-bottom:26px}.q h3{font:500 22px 'Cormorant Garamond',serif;color:var(--gold2);margin:0 0 12px}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opt{padding:10px 16px;border:1px solid var(--line);border-radius:22px;cursor:pointer;background:var(--panel);color:var(--text);font:inherit;font-size:14px;transition:.15s}
+.opt:hover{border-color:var(--gold)}.opt.sel{background:var(--gold);border-color:var(--gold);color:#231c0f;font-weight:500}
+.go{width:100%;padding:15px;font:inherit;font-size:16px;font-weight:500;background:linear-gradient(180deg,var(--gold2),var(--gold));color:#231c0f;border:none;border-radius:12px;cursor:pointer;margin-top:8px}
+.results{margin-top:28px;display:flex;flex-direction:column;gap:14px}
+.rc{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel)}
+.rc img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:0 0 64px}
+.rc h4{margin:0;font:500 20px 'Cormorant Garamond',serif;color:#fff}
+.rc .m{color:var(--muted);font-size:13px}.rc .p{color:var(--gold2);margin-top:2px}
+.rc a{margin-left:auto;color:var(--gold);white-space:nowrap}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:34px}.foot a{color:var(--gold)}
+</style></head>
+<body><div class="wrap">
+  <div class="brand"><span class="ar">بيت العود</span><b>OUD HOUSE</b></div>
+  <h1>Find your scent</h1>
+  <p class="lead">Answer three quick questions and we'll suggest your match.</p>
+  <div id="quiz"></div>
+  <div class="results" id="results"></div>
+  <div class="foot"><a href="fragrances.html">Browse the full collection →</a></div>
+</div>
+<script src="assets/js/data.js"></script>
+<script>
+(function(){
+  var FAM=[...new Set((typeof FRAGRANCES!=='undefined'?FRAGRANCES:[]).map(function(f){return f.family}).filter(Boolean))];
+  var Q=[
+    {k:'fam',t:'Which styles draw you in?',multi:true,opts:FAM.map(function(f){return{v:f,l:f}})},
+    {k:'time',t:'When will you wear it?',opts:[{v:'day',l:'Daytime'},{v:'night',l:'Evening'},{v:'any',l:'Anytime'}]},
+    {k:'season',t:'And the season?',opts:[{v:'summer',l:'Warm weather'},{v:'winter',l:'Cooler weather'},{v:'any',l:'All year'}]}
+  ];
+  var ans={fam:[],time:'any',season:'any'};
+  var host=document.getElementById('quiz'),out=document.getElementById('results');
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function draw(){
+    host.innerHTML=Q.map(function(q){
+      return '<div class="q"><h3>'+esc(q.t)+'</h3><div class="opts">'+q.opts.map(function(o){
+        var sel=q.multi?ans[q.k].indexOf(o.v)>=0:ans[q.k]===o.v;
+        return '<button class="opt'+(sel?' sel':'')+'" data-q="'+q.k+'" data-v="'+esc(o.v)+'" data-m="'+(q.multi?1:0)+'">'+esc(o.l)+'</button>'
+      }).join('')+'</div></div>'
+    }).join('')+'<button class="go" id="go">Show my matches</button>';
+  }
+  host.addEventListener('click',function(e){
+    var b=e.target.closest('.opt');
+    if(b){var k=b.dataset.q;if(b.dataset.m==='1'){var i=ans[k].indexOf(b.dataset.v);if(i>=0)ans[k].splice(i,1);else ans[k].push(b.dataset.v)}else ans[k]=b.dataset.v;draw();return}
+    if(e.target.id==='go')score();
+  });
+  function score(){
+    if(typeof FRAGRANCES==='undefined'){out.innerHTML='<p>No fragrances yet.</p>';return}
+    var ranked=FRAGRANCES.map(function(f){
+      var s=0; if(ans.fam.indexOf(f.family)>=0)s+=5;
+      var w=f.wear||{};
+      if(ans.time!=='any')s+=(w[ans.time]||0)/25;
+      if(ans.season!=='any')s+=(w[ans.season]||0)/25;
+      return {f:f,s:s}
+    }).sort(function(a,b){return b.s-a.s}).slice(0,3);
+    out.innerHTML='<h3 style="font-family:Cormorant Garamond,serif;color:#e6c684">Your matches</h3>'+ranked.map(function(r){var f=r.f;
+      return '<div class="rc">'+(f.image?'<img src="'+esc(f.image)+'" alt="">':'')+
+        '<div><h4>'+esc(f.name)+'</h4><div class="m">'+esc(f.family||'')+(f.inspiredBy?' · in the style of '+esc(f.inspiredBy):'')+'</div>'+
+        '<div class="p">'+esc(f.price||'')+'</div></div>'+
+        '<a href="fragrance.html?id='+encodeURIComponent(f.id)+'">View →</a></div>'
+    }).join('');
+    out.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  draw();
+})();
+</script></body></html>
