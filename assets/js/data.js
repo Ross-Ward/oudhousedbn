@@ -27,10 +27,15 @@ const FRAGRANCES = [
     family: 'Woody Oriental',
     desc: 'The house signature. Deep Cambodian oud wrapped in smoked amber and a whisper of rose — regal, dark and unmistakable.',
     image: 'assets/img/product-collection.jpg',
-    price: 'From €35',
-    priceEUR: 35,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '10–12 hrs',
     notes: {
       top: ['Saffron', 'Bergamot'],
@@ -53,10 +58,15 @@ const FRAGRANCES = [
     family: 'Amber',
     desc: 'Golden amber melted over vanilla and labdanum. A warm evening scent that lingers on skin and fabric alike.',
     image: 'assets/img/product-box-bottles.jpg',
-    price: 'From €28',
-    priceEUR: 28,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '8–10 hrs',
     notes: {
       top: ['Orange Blossom', 'Pink Pepper'],
@@ -79,10 +89,15 @@ const FRAGRANCES = [
     family: 'Musk',
     desc: 'A clean, powdery white musk with a soft floral heart — the scent of freshly pressed linen at midnight.',
     image: 'assets/img/product-oil-cap.jpg',
-    price: 'From €22',
-    priceEUR: 22,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '6–8 hrs',
     notes: {
       top: ['Aldehydes', 'Lily of the Valley'],
@@ -104,10 +119,15 @@ const FRAGRANCES = [
     family: 'Woody Oriental',
     desc: 'Raw African oud with leather and spice — untamed, smoky and built for those who want to be remembered.',
     image: 'assets/img/product-collection.jpg',
-    price: 'From €38',
-    priceEUR: 38,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '12+ hrs',
     notes: {
       top: ['Black Pepper', 'Cardamom'],
@@ -130,10 +150,15 @@ const FRAGRANCES = [
     family: 'Floral',
     desc: 'The queen of roses, distilled in the old way. Honeyed Taif rose deepened with a touch of oud and saffron.',
     image: 'assets/img/product-box-bottles.jpg',
-    price: 'From €30',
-    priceEUR: 30,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '8–10 hrs',
     notes: {
       top: ['Saffron', 'Geranium'],
@@ -156,10 +181,15 @@ const FRAGRANCES = [
     family: 'Woody Oriental',
     desc: 'Our flagship eau de parfum. The Royal Oud DNA, lifted with bergamot and built to project — bottled at 50ml.',
     image: 'assets/img/product-collection.jpg',
-    price: 'From €65',
-    priceEUR: 65,
-    size: '50ml',
-    type: 'Eau de Parfum',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '8–10 hrs',
     notes: {
       top: ['Bergamot', 'Saffron', 'Cinnamon'],
@@ -182,10 +212,15 @@ const FRAGRANCES = [
     family: 'Musk',
     desc: 'Oud without the smoke — creamy, soft and luminous. The gentlest way into the world of agarwood.',
     image: 'assets/img/product-oil-cap.jpg',
-    price: 'From €32',
-    priceEUR: 32,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '8–10 hrs',
     notes: {
       top: ['Bergamot', 'Nutmeg'],
@@ -208,10 +243,15 @@ const FRAGRANCES = [
     family: 'Amber',
     desc: 'A dense amber-incense accord with dried fruits and myrrh — winter evenings in a bottle.',
     image: 'assets/img/product-box-bottles.jpg',
-    price: 'From €34',
-    priceEUR: 34,
-    size: '12ml',
-    type: 'Oil',
+    price: 'From €10',
+    priceEUR: 10,
+    size: '5ml',
+    type: 'Roll-on Oil',
+    formats: [
+      { type: 'Roll-on Oil', size: '5ml', priceEUR: 10 },
+      { type: 'Roll-on Oil', size: '12ml', priceEUR: 30 },
+      { type: 'Eau de Parfum', size: '50ml', priceEUR: 50 }
+    ],
     longevity: '10–12 hrs',
     notes: {
       top: ['Dried Fruits', 'Clove'],
