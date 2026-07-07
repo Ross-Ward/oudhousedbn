@@ -3161,5 +3161,6 @@ const FRAGRANCES = [
 const CONTACT = {
   "instagram": "https://www.instagram.com/oudhousedbn",
   "whatsapp": "",
-  "email": ""
+  "email": "",
+  "apiBase": ""
 };
