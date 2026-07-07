@@ -18,11 +18,13 @@ h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4
 .opt:hover{border-color:var(--gold)}.opt.sel{background:var(--gold);border-color:var(--gold);color:#231c0f;font-weight:500}
 .go{width:100%;padding:15px;font:inherit;font-size:16px;font-weight:500;background:linear-gradient(180deg,var(--gold2),var(--gold));color:#231c0f;border:none;border-radius:12px;cursor:pointer;margin-top:8px}
 .results{margin-top:28px;display:flex;flex-direction:column;gap:14px}
-.rc{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel)}
+.rc{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel);
+  color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s,transform .15s}
+.rc:hover{border-color:var(--gold);transform:translateY(-1px)}
 .rc img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:0 0 64px}
 .rc h4{margin:0;font:500 20px 'Cormorant Garamond',serif;color:#fff}
 .rc .m{color:var(--muted);font-size:13px}.rc .p{color:var(--gold2);margin-top:2px}
-.rc a{margin-left:auto;color:var(--gold);white-space:nowrap}
+.rc .go{margin-left:auto;color:var(--gold);white-space:nowrap}
 .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:34px}.foot a{color:var(--gold)}
 </style></head>
 <body><div class="wrap">
@@ -68,10 +70,10 @@ h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4
       return {f:f,s:s}
     }).sort(function(a,b){return b.s-a.s}).slice(0,3);
     out.innerHTML='<h3 style="font-family:Cormorant Garamond,serif;color:#e6c684">Your matches</h3>'+ranked.map(function(r){var f=r.f;
-      return '<div class="rc">'+(f.image?'<img src="'+esc(f.image)+'" alt="">':'')+
+      return '<a class="rc" target="_top" href="fragrance.html?id='+encodeURIComponent(f.id)+'">'+(f.image?'<img src="'+esc(f.image)+'" alt="">':'')+
         '<div><h4>'+esc(f.name)+'</h4><div class="m">'+esc(f.family||'')+(f.inspiredBy?' · in the style of '+esc(f.inspiredBy):'')+'</div>'+
         '<div class="p">'+esc(f.price||'')+'</div></div>'+
-        '<a href="fragrance.html?id='+encodeURIComponent(f.id)+'">View →</a></div>'
+        '<span class="go">View →</span></a>'
     }).join('');
     out.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
