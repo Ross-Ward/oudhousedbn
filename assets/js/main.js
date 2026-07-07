@@ -483,7 +483,7 @@ function cartLines() {
     const f = FRAGRANCES.find(x => x.id === id);
     if (!f) return null;
     const ft = fmtOf(f, fi);
-    return { key, f, qty, price: ft ? ft.priceEUR : (f.priceEUR || 0), label: ft ? (ft.type + ' ' + ft.size) : (f.size + ' ' + f.type) };
+    return { key, f, fi, qty, price: ft ? ft.priceEUR : (f.priceEUR || 0), label: ft ? (ft.type + ' ' + ft.size) : (f.size + ' ' + f.type) };
   }).filter(Boolean);
 }
 
@@ -514,11 +514,29 @@ cartHost.innerHTML = `
     <div class="cart-items" id="cart-items"></div>
     <div class="cart-foot" id="cart-foot">
       <div class="cart-total">Total <strong id="cart-total">€0</strong></div>
-      <a class="btn btn-solid" id="cart-checkout-wa" target="_blank" rel="noopener">Checkout on WhatsApp</a>
-      <a class="btn btn-solid" id="cart-checkout-ig" target="_blank" rel="noopener">Order via Instagram DM</a>
-      <a class="btn" id="cart-checkout-email">Order by Email</a>
-      <button class="btn" id="cart-copy" type="button">Copy order message</button>
-      <p class="cart-note">We confirm every order personally and arrange payment &amp; delivery with you directly.</p>
+      <div id="cart-actions">
+        <button class="btn btn-solid" id="cart-place" type="button">Place order</button>
+        <a class="btn btn-solid" id="cart-signin" href="account.html">Sign in to order online</a>
+        <a class="btn btn-solid" id="cart-checkout-wa" target="_blank" rel="noopener">Checkout on WhatsApp</a>
+        <a class="btn btn-solid" id="cart-checkout-ig" target="_blank" rel="noopener">Order via Instagram DM</a>
+        <a class="btn" id="cart-checkout-email">Order by Email</a>
+        <button class="btn" id="cart-copy" type="button">Copy order message</button>
+        <p class="cart-note">We confirm every order personally and arrange payment &amp; delivery with you directly.</p>
+      </div>
+      <form id="cart-checkout" hidden>
+        <label class="co-label">Phone<input id="co-phone" type="tel" maxlength="40" autocomplete="tel" placeholder="For delivery questions"></label>
+        <label class="co-label">Delivery address<textarea id="co-address" rows="2" maxlength="400" required placeholder="Street, area, Dublin / Ireland"></textarea></label>
+        <label class="co-label">Note <span class="co-opt">(optional)</span><textarea id="co-note" rows="2" maxlength="500" placeholder="Custom blend requests, preferred delivery time…"></textarea></label>
+        <button class="btn btn-solid" type="submit" id="co-confirm">Confirm order</button>
+        <button class="btn" type="button" id="co-back">Back</button>
+        <p class="cart-err" id="co-err" hidden></p>
+      </form>
+    </div>
+    <div class="cart-done" id="cart-done" hidden>
+      <p class="cart-done-title">Thank you.</p>
+      <p>Order <b id="cart-done-id"></b> received.<br>We confirm every order personally and arrange payment &amp; delivery with you directly.</p>
+      <a class="btn btn-solid" href="account.html">View my orders</a>
+      <button class="btn" id="cart-done-close" type="button">Close</button>
     </div>
   </aside>`;
 document.body.append(...cartHost.children);
@@ -580,14 +598,22 @@ function renderCartDrawer() {
   document.getElementById('cart-foot').style.display = lines.length ? '' : 'none';
 
   /* Only offer checkout channels that are actually configured.
+     Online ordering (account required) leads when the shop API is set up;
      Instagram DM (plus a copyable order message) covers the gap until
      WhatsApp/email are set in the Studio. */
   if (typeof CONTACT !== 'undefined' && lines.length) {
     const msg = orderMessage();
+    const place = document.getElementById('cart-place');
+    const signin = document.getElementById('cart-signin');
     const wa = document.getElementById('cart-checkout-wa');
     const ig = document.getElementById('cart-checkout-ig');
     const em = document.getElementById('cart-checkout-email');
     const cp = document.getElementById('cart-copy');
+    const acct = window.OH_ACCOUNT;
+    const canApi = !!(acct && acct.API);
+    const signedIn = canApi && !!acct.getAuth();
+    place.style.display = signedIn ? '' : 'none';
+    signin.style.display = (canApi && !signedIn) ? '' : 'none';
     const hasWa = !!CONTACT.whatsapp, hasEm = !!CONTACT.email, hasIg = !!CONTACT.instagram;
     wa.style.display = hasWa ? '' : 'none';
     em.style.display = hasEm ? '' : 'none';
@@ -598,6 +624,67 @@ function renderCartDrawer() {
     if (hasIg) ig.href = CONTACT.instagram;
   }
 }
+
+/* ---------- online checkout (signed-in customers, shop API) ---------- */
+(function () {
+  const drawer = document.getElementById('cart-drawer');
+  const actions = () => document.getElementById('cart-actions');
+  const form = document.getElementById('cart-checkout');
+  const done = document.getElementById('cart-done');
+  if (!drawer || !form) return;
+
+  document.getElementById('cart-place').addEventListener('click', () => {
+    actions().hidden = true;
+    form.hidden = false;
+    document.getElementById('co-address').focus();
+  });
+  document.getElementById('co-back').addEventListener('click', () => {
+    form.hidden = true;
+    actions().hidden = false;
+  });
+  document.getElementById('cart-done-close').addEventListener('click', () => {
+    done.hidden = true;
+    drawer.classList.remove('done');
+    closeCart();
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const acct = window.OH_ACCOUNT;
+    if (!acct || !acct.API) return;
+    const errEl = document.getElementById('co-err');
+    const btn = document.getElementById('co-confirm');
+    errEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Placing order…';
+    try {
+      const order = await acct.shopApi('/shop/orders', { method: 'POST', body: {
+        lines: cartLines().map(l => ({ id: l.f.id, fmtIdx: l.fi, qty: l.qty })),
+        phone: document.getElementById('co-phone').value.trim(),
+        address: document.getElementById('co-address').value.trim(),
+        note: document.getElementById('co-note').value.trim(),
+      } });
+      setCart({});
+      form.hidden = true;
+      document.getElementById('cart-done-id').textContent = order.id;
+      drawer.classList.add('done');
+      done.hidden = false;
+    } catch (err) {
+      if (err.status === 401) {
+        acct.setAuth(null);
+        errEl.textContent = 'Your session expired — please sign in again from the Account page.';
+      } else if (err.offline) {
+        errEl.textContent = 'Our ordering service is unreachable right now — press Back and order through Instagram or WhatsApp instead.';
+      } else {
+        errEl.textContent = err.message;
+      }
+      errEl.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Confirm order';
+    }
+  });
+})();
 
 /* Copy the pre-typed order message (for Instagram DM checkout) */
 document.addEventListener('click', e => {

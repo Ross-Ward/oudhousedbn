@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fragrance — Oud House | بيت العود</title>
-  <meta name="description" content="Fragrance details — notes, longevity and pricing. Handcrafted perfume oils by Oud House Dublin.">
+  <title>My Account — Oud House | بيت العود</title>
+  <meta name="description" content="Sign in to view your Oud House orders — handcrafted perfume oils, made in Dublin.">
   <link rel="icon" type="image/jpeg" href="assets/img/logo.jpg">
+  <link rel="canonical" href="https://ross-ward.github.io/oudhousedbn/account.html">
   <meta name="theme-color" content="#0a0a0b">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Oud House Dublin">
-  <meta property="og:title" content="Fragrance — Oud House | بيت العود">
-  <meta property="og:description" content="Fragrance details — notes, longevity and pricing. Handcrafted perfume oils by Oud House Dublin.">
+  <meta property="og:title" content="My Account — Oud House | بيت العود">
+  <meta property="og:description" content="Sign in to view your Oud House orders.">
+  <meta property="og:url" content="https://ross-ward.github.io/oudhousedbn/account.html">
   <meta property="og:image" content="https://ross-ward.github.io/oudhousedbn/assets/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="robots" content="noindex">
   <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/style.css">
@@ -31,10 +34,11 @@
       <div class="nav-right">
         <ul class="nav-links">
           <li><a href="index.html">Home</a></li>
-          <li><a href="fragrances.html" class="active">Fragrances</a></li>
-          <li><a href="account.html">Account</a></li>
+          <li><a href="fragrances.html">Fragrances</a></li>
+          <li><a href="wishlist.html">Wishlist</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="account.html" class="active">Account</a></li>
           <li><a href="index.html#custom">Custom Oils</a></li>
-          <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#contact">Contact</a></li>
         </ul>
         <button class="cart-btn" id="cart-open" aria-label="Open cart">
@@ -46,29 +50,18 @@
     </div>
   </header>
 
-  <section style="padding-top:1rem">
-    <div class="container detail-wrap" id="frag-detail">
-      <!-- Rendered by main.js from ?id= query param -->
+  <section>
+    <div class="container acct-wrap">
+      <div style="text-align:center">
+        <span class="eyebrow">بيت العود</span>
+        <h1 class="section-title" id="acct-title">Your Account</h1>
+      </div>
+      <div id="acct-root"></div>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-grid">
-        <a href="index.html" class="brand">
-          <img src="assets/img/logo.jpg" alt="Oud House logo">
-          <div>
-            <div class="brand-name">OUD <span>HOUSE</span></div>
-            <span class="brand-arabic">بيت العود</span>
-          </div>
-        </a>
-        <ul class="footer-links">
-          <li><a href="fragrances.html">Fragrances</a></li>
-          <li><a href="index.html#custom">Custom Oils</a></li>
-          <li><a href="index.html#about">About</a></li>
-          <li><a href="#" data-contact="instagram" target="_blank" rel="noopener">Instagram</a></li>
-        </ul>
-      </div>
       <div class="copyright">© <span id="year"></span> Oud House Dublin · بيت العود · Handcrafted oil-based perfumes</div>
     </div>
   </footer>
