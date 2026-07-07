@@ -3,6 +3,21 @@
    Dark luxury theme · black & gold
    ============================================ */
 
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url(../fonts/cormorant.woff2) format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jost';
+  src: url(../fonts/jost.woff2) format('woff2');
+  font-weight: 300 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #0a0a0b;
   --bg-soft: #111113;
@@ -511,7 +526,8 @@ section { padding: 5.5rem 0; }
 
 .wear-item { text-align: center; }
 
-.wear-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 0.5rem; }
+.wear-icon { line-height: 1; margin-bottom: 0.5rem; }
+.wear-icon svg { width: 21px; height: 21px; display: inline-block; }
 
 .wear-label {
   font-size: 0.66rem;

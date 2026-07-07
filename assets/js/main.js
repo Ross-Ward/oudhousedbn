@@ -154,13 +154,23 @@ function accordTextColor(hex) {
   return lum > 0.55 ? '#1a1a1a' : '#f0ede6';
 }
 
+/* Inline SVG line icons (stroke follows the season colour via currentColor) */
+const wearSvg = inner =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+
 const WEAR_META = [
-  { key: 'winter', label: 'Winter', icon: '❄️', color: '#7ec8e3' },
-  { key: 'spring', label: 'Spring', icon: '🌿', color: '#8bc34a' },
-  { key: 'summer', label: 'Summer', icon: '⛱️', color: '#f08080' },
-  { key: 'fall',   label: 'Fall',   icon: '🍂', color: '#e8c48a' },
-  { key: 'day',    label: 'Day',    icon: '☀️', color: '#f5a623' },
-  { key: 'night',  label: 'Night',  icon: '🌙', color: '#9db8f0' }
+  { key: 'winter', label: 'Winter', color: '#7ec8e3',
+    icon: wearSvg('<path d="M12 2v20M4.2 6.5l15.6 11M19.8 6.5l-15.6 11M12 2l-2 2.5M12 2l2 2.5M12 22l-2-2.5M12 22l2-2.5"/>') },
+  { key: 'spring', label: 'Spring', color: '#8bc34a',
+    icon: wearSvg('<path d="M6 21C6 12.5 12.5 5 21 4c-.8 8.8-6.6 15.4-15 17z"/><path d="M6 21c2.6-5.8 6.6-10.4 12-14"/>') },
+  { key: 'summer', label: 'Summer', color: '#f08080',
+    icon: wearSvg('<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 3v17"/><path d="M12 20h3.5"/>') },
+  { key: 'fall',   label: 'Fall',   color: '#e8c48a',
+    icon: wearSvg('<path d="M3 8h9.5a2.8 2.8 0 1 0-2.8-2.8"/><path d="M3 12h13.5a2.8 2.8 0 1 1-2.8 2.8"/><path d="M3 16h6"/>') },
+  { key: 'day',    label: 'Day',    color: '#f5a623',
+    icon: wearSvg('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.7M12 18.8v2.7M2.5 12h2.7M18.8 12h2.7M5.3 5.3l1.9 1.9M16.8 16.8l1.9 1.9M18.7 5.3l-1.9 1.9M7.2 16.8l-1.9 1.9"/>') },
+  { key: 'night',  label: 'Night',  color: '#9db8f0',
+    icon: wearSvg('<path d="M20.6 13.2A8.5 8.5 0 1 1 10.8 3.4a7 7 0 0 0 9.8 9.8z"/>') }
 ];
 
 /* ---------- Detail page (fragrance.html) ---------- */
@@ -194,7 +204,7 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
       <div class="wear-grid">
         ${WEAR_META.map(m => `
           <div class="wear-item">
-            <div class="wear-icon">${m.icon}</div>
+            <div class="wear-icon" style="color:${m.color}">${m.icon}</div>
             <div class="wear-label">${m.label}</div>
             <div class="wear-track"><div class="wear-fill" style="width:${f.wear[m.key] || 0}%;background:${m.color}"></div></div>
           </div>`).join('')}
@@ -318,12 +328,25 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
   }));
 }
 
-/* ---------- Contact links ---------- */
+/* ---------- Contact links ----------
+   A channel that isn't configured yet must never render a dead button:
+   fall back to the element's data-contact-fallback channel, or hide it. */
+function contactHref(key) {
+  if (typeof CONTACT === 'undefined') return '';
+  if (key === 'email') return CONTACT.email ? 'mailto:' + CONTACT.email : '';
+  return CONTACT[key] || '';
+}
 if (typeof CONTACT !== 'undefined') {
   document.querySelectorAll('[data-contact]').forEach(el => {
-    const key = el.dataset.contact;
-    if (key === 'email') el.href = 'mailto:' + CONTACT.email;
-    else if (CONTACT[key]) el.href = CONTACT[key];
+    const href = contactHref(el.dataset.contact);
+    if (href) { el.href = href; return; }
+    const fb = el.dataset.contactFallback && contactHref(el.dataset.contactFallback);
+    if (fb) {
+      el.href = fb;
+      if (el.dataset.contactFallbackLabel) el.textContent = el.dataset.contactFallbackLabel;
+    } else {
+      el.style.display = 'none';
+    }
   });
 }
 
@@ -393,7 +416,9 @@ cartHost.innerHTML = `
     <div class="cart-foot" id="cart-foot">
       <div class="cart-total">Total <strong id="cart-total">€0</strong></div>
       <a class="btn btn-solid" id="cart-checkout-wa" target="_blank" rel="noopener">Checkout on WhatsApp</a>
+      <a class="btn btn-solid" id="cart-checkout-ig" target="_blank" rel="noopener">Order via Instagram DM</a>
       <a class="btn" id="cart-checkout-email">Order by Email</a>
+      <button class="btn" id="cart-copy" type="button">Copy order message</button>
       <p class="cart-note">We confirm every order personally and arrange payment &amp; delivery with you directly.</p>
     </div>
   </aside>`;
@@ -455,12 +480,52 @@ function renderCartDrawer() {
   document.getElementById('cart-total').textContent = '€' + cartTotal(lines);
   document.getElementById('cart-foot').style.display = lines.length ? '' : 'none';
 
+  /* Only offer checkout channels that are actually configured.
+     Instagram DM (plus a copyable order message) covers the gap until
+     WhatsApp/email are set in the Studio. */
   if (typeof CONTACT !== 'undefined' && lines.length) {
     const msg = orderMessage();
-    document.getElementById('cart-checkout-wa').href = CONTACT.whatsapp + '?text=' + encodeURIComponent(msg);
-    document.getElementById('cart-checkout-email').href =
-      'mailto:' + CONTACT.email + '?subject=' + encodeURIComponent('Order — Oud House') + '&body=' + encodeURIComponent(msg);
+    const wa = document.getElementById('cart-checkout-wa');
+    const ig = document.getElementById('cart-checkout-ig');
+    const em = document.getElementById('cart-checkout-email');
+    const cp = document.getElementById('cart-copy');
+    const hasWa = !!CONTACT.whatsapp, hasEm = !!CONTACT.email, hasIg = !!CONTACT.instagram;
+    wa.style.display = hasWa ? '' : 'none';
+    em.style.display = hasEm ? '' : 'none';
+    ig.style.display = (!hasWa && hasIg) ? '' : 'none';
+    cp.style.display = (!hasWa && hasIg) ? '' : 'none';
+    if (hasWa) wa.href = CONTACT.whatsapp + '?text=' + encodeURIComponent(msg);
+    if (hasEm) em.href = 'mailto:' + CONTACT.email + '?subject=' + encodeURIComponent('Order — Oud House') + '&body=' + encodeURIComponent(msg);
+    if (hasIg) ig.href = CONTACT.instagram;
   }
+}
+
+/* Copy the pre-typed order message (for Instagram DM checkout) */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('#cart-copy');
+  if (!btn) return;
+  const done = () => {
+    const prev = btn.textContent;
+    btn.textContent = 'Copied — paste it in your DM';
+    setTimeout(() => { btn.textContent = prev; }, 2200);
+  };
+  const msg = orderMessage();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(done).catch(() => fallbackCopy(msg, done));
+  } else {
+    fallbackCopy(msg, done);
+  }
+});
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch { /* nothing more we can do */ }
+  ta.remove();
 }
 
 /* One delegated handler for every add / qty / remove button */
