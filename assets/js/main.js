@@ -68,19 +68,40 @@ function fragCard(f) {
 const gridEl = document.getElementById('frag-grid');
 if (gridEl && typeof FRAGRANCES !== 'undefined') {
   const searchEl = document.getElementById('frag-search');
-  const chipEls = document.querySelectorAll('.chip[data-family]');
+  const chipHost = document.getElementById('family-chips');
+  const sortEl = document.getElementById('frag-sort');
+  const countEl = document.getElementById('frag-count');
   let activeFamily = 'All';
+
+  /* Family chips come from the catalogue itself so they always match the data */
+  if (chipHost) {
+    const fams = [...new Set(FRAGRANCES.map(f => f.family).filter(Boolean))].sort();
+    chipHost.innerHTML = ['All', ...fams].map((fam, i) =>
+      `<button class="chip${i === 0 ? ' active' : ''}" data-family="${fam}">${fam}</button>`).join('');
+  }
+  const chipEls = document.querySelectorAll('.chip[data-family]');
+
+  const avgOf = f => {
+    const rs = (Array.isArray(f.reviews) ? f.reviews : []).map(r => Number(r.rating) || 0).filter(Boolean);
+    return rs.length ? rs.reduce((a, b) => a + b, 0) / rs.length : 0;
+  };
 
   function render() {
     const q = (searchEl?.value || '').trim().toLowerCase();
-    const list = FRAGRANCES.filter(f => {
+    let list = FRAGRANCES.filter(f => {
       const inFamily = activeFamily === 'All' || f.family === activeFamily;
       const haystack = [f.name, f.family, f.inspiredBy || '', ...f.notes.top, ...f.notes.heart, ...f.notes.base].join(' ').toLowerCase();
       return inFamily && haystack.includes(q);
     });
+    const sort = sortEl?.value || 'featured';
+    if (sort === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    else if (sort === 'rated') list = [...list].sort((a, b) => avgOf(b) - avgOf(a));
+    else list = [...list].sort((a, b) => (b.featured === true) - (a.featured === true));
+    if (countEl) countEl.textContent = `${list.length} oil${list.length === 1 ? '' : 's'}`;
     gridEl.innerHTML = list.length
       ? list.map(fragCard).join('')
-      : '<p class="no-results">No fragrances match your search — try a different note or family.</p>';
+      : `<div class="no-results">No fragrances match your search — try a different note or family.<br>
+         <button class="btn no-results-reset" id="frag-reset" type="button">Show everything</button></div>`;
   }
 
   chipEls.forEach(chip => chip.addEventListener('click', () => {
@@ -90,7 +111,20 @@ if (gridEl && typeof FRAGRANCES !== 'undefined') {
     render();
   }));
 
+  gridEl.addEventListener('click', e => {
+    if (!e.target.closest('#frag-reset')) return;
+    if (searchEl) searchEl.value = '';
+    activeFamily = 'All';
+    chipEls.forEach(c => c.classList.toggle('active', c.dataset.family === 'All'));
+    render();
+  });
+
   searchEl?.addEventListener('input', render);
+  sortEl?.addEventListener('change', render);
+
+  /* Deep-link support: fragrances.html?q=Oud (used by the homepage note chips) */
+  const preQ = new URLSearchParams(location.search).get('q');
+  if (preQ && searchEl) searchEl.value = preQ;
   render();
 }
 
@@ -99,6 +133,43 @@ const featuredEl = document.getElementById('featured-grid');
 if (featuredEl && typeof FRAGRANCES !== 'undefined') {
   const featured = FRAGRANCES.filter(f => f.featured);
   featuredEl.innerHTML = (featured.length ? featured : FRAGRANCES).slice(0, 4).map(fragCard).join('');
+}
+
+/* ---------- Shop by note (home page) ---------- */
+const noteCloudEl = document.getElementById('note-cloud');
+if (noteCloudEl && typeof FRAGRANCES !== 'undefined') {
+  const freq = {};
+  FRAGRANCES.forEach(f => ['top', 'heart', 'base'].forEach(t =>
+    (f.notes[t] || []).forEach(n => { freq[n] = (freq[n] || 0) + 1; })));
+  /* House signatures lead, then whatever the catalogue uses most */
+  const SIGNATURE = ['Oud', 'Rose', 'Amber', 'Musk', 'Saffron', 'Vanilla'];
+  const lead = SIGNATURE.filter(n => freq[n]);
+  const rest = Object.entries(freq).sort((a, b) => b[1] - a[1]).map(([n]) => n).filter(n => !lead.includes(n));
+  noteCloudEl.innerHTML = [...lead, ...rest].slice(0, 14).map(note =>
+    `<a class="note-chip" href="fragrances.html?q=${encodeURIComponent(note)}">${note}</a>`).join('');
+}
+
+/* ---------- What people say (home page) ---------- */
+const homeRevEl = document.getElementById('home-reviews');
+if (homeRevEl && typeof FRAGRANCES !== 'undefined') {
+  const escT = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pool = [];
+  FRAGRANCES.forEach(f => (Array.isArray(f.reviews) ? f.reviews : []).forEach(r => {
+    if (r && r.text && (Number(r.rating) || 0) >= 5) pool.push({ f, r });
+  }));
+  /* one review per fragrance, prefer the longest (most substantial) */
+  const seen = new Set();
+  const picks = pool.sort((a, b) => b.r.text.length - a.r.text.length)
+    .filter(({ f }) => !seen.has(f.id) && seen.add(f.id)).slice(0, 3);
+  homeRevEl.innerHTML = picks.map(({ f, r }) => `
+    <div class="review">
+      <div class="review-head">
+        <span class="review-author">${escT(r.author) || 'Verified buyer'}</span>
+        <span class="stars small">${'★'.repeat(Math.min(5, Math.round(Number(r.rating) || 5)))}</span>
+      </div>
+      <p class="review-text">${escT(r.text)}</p>
+      <a class="review-product" href="fragrance.html?id=${f.id}">on ${f.name}</a>
+    </div>`).join('');
 }
 
 /* ---------- Wishlist (localStorage) ---------- */
@@ -326,6 +397,21 @@ if (detailEl && typeof FRAGRANCES !== 'undefined') {
     set('d-price', '€' + ft.priceEUR); set('d-size', ft.size); set('d-conc', ft.type);
     syncQty();
   }));
+
+  /* Sticky add-to-cart bar (small screens only, mirrors the main button) */
+  const sticky = document.createElement('div');
+  sticky.className = 'detail-stickybar';
+  sticky.innerHTML = soldOut
+    ? `<span class="sb-name">${f.name}</span><span class="sb-soldout">Sold out</span>`
+    : `<span class="sb-name">${f.name}</span><button class="btn btn-solid sb-add" type="button"></button>`;
+  document.body.appendChild(sticky);
+  const sbAdd = sticky.querySelector('.sb-add');
+  if (sbAdd) {
+    const syncSb = () => { sbAdd.textContent = detailAdd.textContent; };
+    syncSb();
+    new MutationObserver(syncSb).observe(detailAdd, { childList: true, characterData: true, subtree: true });
+    sbAdd.addEventListener('click', () => detailAdd.click());
+  }
 }
 
 /* ---------- Contact links ----------

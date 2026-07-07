@@ -57,12 +57,14 @@
 
       <div class="frag-toolbar">
         <input type="search" id="frag-search" class="frag-search" placeholder="Search a scent you love, a name or a note — Sauvage, Aventus, oud…">
-        <div class="frag-filters">
-          <button class="chip active" data-family="All">All</button>
-          <button class="chip" data-family="Woody Oriental">Woody Oriental</button>
-          <button class="chip" data-family="Amber">Amber</button>
-          <button class="chip" data-family="Musk">Musk</button>
-          <button class="chip" data-family="Floral">Floral</button>
+        <div class="frag-filters" id="family-chips"></div>
+        <div class="frag-toolbar-end">
+          <select id="frag-sort" class="frag-sort" aria-label="Sort fragrances">
+            <option value="featured">Featured first</option>
+            <option value="name">Name A–Z</option>
+            <option value="rated">Top rated</option>
+          </select>
+          <span class="frag-count" id="frag-count"></span>
         </div>
       </div>
 
