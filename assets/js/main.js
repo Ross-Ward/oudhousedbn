@@ -192,6 +192,19 @@ function renderWishlist() {
 }
 if (wishGridEl) renderWishlist();
 
+/* Hearts toggled inside the Scent Finder / quiz popup (same-origin iframe)
+   write the same localStorage key; the storage event keeps this page's
+   hearts and wishlist grid in step without a reload. */
+window.addEventListener('storage', e => {
+  if (e.key && e.key !== WISH_KEY) return;
+  document.querySelectorAll('[data-wish]').forEach(el => {
+    const on = isWished(el.dataset.wish);
+    el.classList.toggle('on', on);
+    el.textContent = on ? '♥' : '♡';
+  });
+  renderWishlist();
+});
+
 /* ---------- Accord colours (Fragrantica-style semantic palette) ---------- */
 const ACCORD_COLORS = {
   'oud':          '#3f2c19',
