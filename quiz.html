@@ -24,7 +24,11 @@ h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4
 .rc img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:0 0 64px}
 .rc h4{margin:0;font:500 20px 'Cormorant Garamond',serif;color:#fff}
 .rc .m{color:var(--muted);font-size:13px}.rc .p{color:var(--gold2);margin-top:2px}
-.rc .go{margin-left:auto;color:var(--gold);white-space:nowrap}
+.rc-heart{margin-left:auto;flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(13,11,9,.6);color:var(--muted);font:inherit;font-size:16px;line-height:1;cursor:pointer;transition:.15s}
+.rc-heart:hover{border-color:#e6708a;color:#e6708a}
+.rc-heart.on{color:#e6708a;border-color:#e6708a}
+.rc .go{color:var(--gold);white-space:nowrap}
 .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:34px}.foot a{color:var(--gold)}
 </style></head>
 <body><div class="wrap">
@@ -47,6 +51,17 @@ h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4
   var ans={fam:[],time:'any',season:'any'};
   var host=document.getElementById('quiz'),out=document.getElementById('results');
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  var WISH='oudhouse_wishlist';
+  function wishAll(){try{return JSON.parse(localStorage.getItem(WISH))||[]}catch(e){return[]}}
+  function wished(id){return wishAll().indexOf(id)>=0}
+  function toggleWish(id){var a=wishAll();var i=a.indexOf(id);if(i>=0)a.splice(i,1);else a.push(id);
+    try{localStorage.setItem(WISH,JSON.stringify(a))}catch(e){}return i<0}
+  out.addEventListener('click',function(ev){
+    var h=ev.target.closest('.rc-heart'); if(!h)return;
+    ev.preventDefault(); ev.stopPropagation();
+    var on=toggleWish(h.getAttribute('data-wish-id'));
+    h.classList.toggle('on',on); h.textContent=on?'♥':'♡';
+  });
   function draw(){
     host.innerHTML=Q.map(function(q){
       return '<div class="q"><h3>'+esc(q.t)+'</h3><div class="opts">'+q.opts.map(function(o){
@@ -73,6 +88,7 @@ h1{font:500 40px/1.1 'Cormorant Garamond',serif;text-align:center;margin:6px 0 4
       return '<a class="rc" target="_top" href="fragrance.html?id='+encodeURIComponent(f.id)+'">'+(f.image?'<img src="'+esc(f.image)+'" alt="">':'')+
         '<div><h4>'+esc(f.name)+'</h4><div class="m">'+esc(f.family||'')+(f.inspiredBy?' · in the style of '+esc(f.inspiredBy):'')+'</div>'+
         '<div class="p">'+esc(f.price||'')+'</div></div>'+
+        '<button class="rc-heart'+(wished(f.id)?' on':'')+'" data-wish-id="'+esc(f.id)+'" aria-label="Save '+esc(f.name)+' to wishlist">'+(wished(f.id)?'♥':'♡')+'</button>'+
         '<span class="go">View →</span></a>'
     }).join('');
     out.scrollIntoView({behavior:'smooth',block:'nearest'});
